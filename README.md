@@ -5,19 +5,19 @@
 I have identified five strategies to deal with destructive interference in continual learning systems.
 
 - 1. Preventive strategies against interference
-- 1.1 reducing its frequency, i.e. not allowing interference at every time step of the training process.
-- 1.2 reducing its scope, i.e. preventing interference from reaching critical constituents of the model.
-- 1.3 reducing its intensity, i.e. minimizing the amplitude of catastrophic forgetting.
+  - A. reducing its frequency, i.e. not allowing interference at every time step of the training process.
+  - B. reducing its scope, i.e. preventing interference from reaching critical constituents of the model.
+  - C. reducing its intensity, i.e. minimizing the amplitude of catastrophic forgetting.
 - 2. Counter-measures
-- 2.1 experience replay/rehearsal
-- 2.2 factoring interference into the decision process, e.g. lessening the causal power of perturbed hidden representations.
+  - D. experience replay/rehearsal
+  - E. factoring interference into the decision process, e.g. lessening the causal power of perturbed hidden representations.
 
-Implementing 1.1 or 1.2 usually entails freezing entire modules,
+Implementing A or B usually entails freezing entire modules,
 as in [my previous project](https://github.com/rom1mouret/mpcl).
 
-A great deal of research is focused on 1.3, often by the means of regularization.
+A great deal of research is focused on C, often by the means of regularization.
 
-Strategy 2.2 is the focus of this README file.
+Strategy E is the focus of this README file.
 
 ### Catastrophic interference in action
 
@@ -43,7 +43,9 @@ possible if the system can detect unreliable representations to begin with.
 
 Here is an example of catastrophic interference on MNIST with a 2-dimension latent layer.
 
-![latent representation](images/latent_representation_3.png)
+<p align="center">
+  <img src="images/latent_representation_3.png" alt="latent representation"/>
+</p>
 
 The neural network was first trained on digits 0, 1, 2, 3, 4.
 Then it was trained on digits 5, 6, 7, 8, 9, thereby interfering with the
@@ -62,7 +64,7 @@ Other training rounds: [latent_representation_1.png](images/latent_representatio
 You might think that the probability of a prediction is indicative of whether
 its corresponding latent representation has drifted due to interference.
 
-![image](images/results_probability_as_certainty_measure_after_training_on_0_1_2_3_4.png)
+![confidence before interference](images/results_probability_as_certainty_measure_after_training_on_0_1_2_3_4.png)
 
 As shown above, before interference, misclassification correlates well with low confidence.
 Perturbed digits will likely be misclassified, therefore it is reasonable to expect
@@ -72,7 +74,7 @@ Unfortunately, that correlation doesn't hold true after interference.
 After training the network to recognize new digits, confidence is no longer
 a good proxy for classification accuracy.
 
-![image](images/results_probability_as_certainty_measure_after_training_on_5_6_7_8_9.png)
+![confidence after interference](images/results_probability_as_certainty_measure_after_training_on_5_6_7_8_9.png)
 
 conclusion: classification confidence is not a good metric to inform downstream modules
 that some hidden representations are unreliable, at least in low-dimensional space
@@ -109,11 +111,11 @@ standard deviation.
 
 This is before interference:
 
-![image](images/standard_deviation_as_uncertainty_measure_after_training_on_0_1_2_3_4.png)
+![std before interference](images/standard_deviation_as_uncertainty_measure_after_training_on_0_1_2_3_4.png)
 
 After interference:
 
-![image](images/standard_deviation_as_uncertainty_measure_after_training_on_5_6_7_8_9.png)
+![std after interference](images/standard_deviation_as_uncertainty_measure_after_training_on_5_6_7_8_9.png)
 
 You can see that the standard deviation has significantly increased due to interference.
 
@@ -125,7 +127,7 @@ It is going to be a trade-off between:
 - having every task share a processor with every other task in order to maximally mutualize the models of the CL system.
 - having every task share a processor with a single other task in order to minimize interference.
 
-In the N-task scenario, we end up with the following algorithm.
+In the N-task setting, one can allocate processors to tasks using the following algorithm.
 
 ```python3
 M = 2 # average number of shared processors per task
